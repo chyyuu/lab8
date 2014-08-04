@@ -2,4 +2,5 @@
 *.log
 bin/*
 disk0/*
+*.org
 obj/*

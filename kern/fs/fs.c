@@ -7,6 +7,23 @@
 #include <sfs.h>
 #include <inode.h>
 #include <assert.h>
+int
+files_count(struct files_struct *filesp) {
+    return filesp->files_count;
+}
+
+int
+files_count_inc(struct files_struct *filesp) {
+    filesp->files_count += 1;
+    return filesp->files_count;
+}
+
+int
+files_count_dec(struct files_struct *filesp) {
+    filesp->files_count -= 1;
+    return filesp->files_count;
+}
+
 //called when init_main proc start
 void
 fs_init(void) {

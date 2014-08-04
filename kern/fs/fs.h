@@ -40,22 +40,6 @@ void files_destroy(struct files_struct *filesp);
 void files_closeall(struct files_struct *filesp);
 int dup_files(struct files_struct *to, struct files_struct *from);
 
-static inline int
-files_count(struct files_struct *filesp) {
-    return filesp->files_count;
-}
-
-static inline int
-files_count_inc(struct files_struct *filesp) {
-    filesp->files_count += 1;
-    return filesp->files_count;
-}
-
-static inline int
-files_count_dec(struct files_struct *filesp) {
-    filesp->files_count -= 1;
-    return filesp->files_count;
-}
 
 #endif /* !__KERN_FS_FS_H__ */
 

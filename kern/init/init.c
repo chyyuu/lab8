@@ -18,6 +18,7 @@ int kern_init(void) __attribute__((noreturn));
 
 static void lab1_switch_test(void);
 
+char *ucore_name="uCore lab8";
 void grade_backtrace(void);
 int
 kern_init(void) {
@@ -26,8 +27,8 @@ kern_init(void) {
 
     cons_init();                // init the console
 
-    const char *message = "(THU.CST) os is loading ...";
-    cprintf("%s\n\n", message);
+    const char *message = " is loading ...";
+    cprintf("%s%s\n\n", ucore_name,message);
 
     print_kerninfo();
 
