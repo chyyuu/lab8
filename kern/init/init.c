@@ -18,7 +18,7 @@ int kern_init(void) __attribute__((noreturn));
 
 static void lab1_switch_test(void);
 
-char *ucore_name="uCore lab8";
+char ucore_name[11]="uCore lab8";
 void grade_backtrace(void);
 int
 kern_init(void) {
