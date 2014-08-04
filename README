@@ -1,0 +1,4 @@
+#build ucore
+make
+#build procinfo.ini
+./tools/buildprocinfo.sh
