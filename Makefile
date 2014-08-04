@@ -43,14 +43,14 @@ endif
 
 # define compiler and flags
 
-#HOSTCC		:= gcc
-HOSTCC		:= clang
+HOSTCC		:= gcc
+#HOSTCC		:= clang
 HOSTCFLAGS	:= -g -Wall -O2 -D_FILE_OFFSET_BITS=64
 
 GDB		:= $(GCCPREFIX)gdb
 
-#CC		?= $(GCCPREFIX)gcc
-CC		?= $(GCCPREFIX)clang
+CC		?= $(GCCPREFIX)gcc
+#CC		?= $(GCCPREFIX)clang
 CFLAGS	:= -fno-builtin -Wall -g -m32 -mno-sse -nostdinc $(DEFS)
 #CFLAGS	:= -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc $(DEFS)
 CFLAGS	+= $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
