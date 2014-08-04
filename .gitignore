@@ -2,5 +2,8 @@
 *.log
 bin/*
 disk0/*
+*.zip
+*.gz
+*.bz2
 *.org
 obj/*

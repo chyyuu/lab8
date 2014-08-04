@@ -1,4 +1,14 @@
 #build ucore
 make
-#build procinfo.ini
+#build procinfo.ini and ucore_kernel_procinfo.h
 ./tools/buildprocinfo.sh
+#now 
+#copy procinfo.ini to DECAF/shared/kerninfo/procinfo_ucore/
+#copy ucore_kernel_procinfo.h DECAF/shared/
+
+#goto decaf DIR, build decaf
+#setup decaf's qemu-system-i386
+#run . setenv.sh
+#
+#goback to lab8, and run
+#. tools/run_with_decaf.sh
