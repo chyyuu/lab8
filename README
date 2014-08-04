@@ -7,8 +7,12 @@ make
 #copy ucore_kernel_procinfo.h DECAF/shared/
 
 #goto decaf DIR, build decaf
+#NOTICE: you should fix ucore_kernel_procinfo.h for some syntax error
+#
 #setup decaf's qemu-system-i386
 #run . setenv.sh
 #
 #goback to lab8, and run
+#NOTICE: you should fix procinfo.ini for some duplicated keys in procinfo.ini
 #. tools/run_with_decaf.sh
+
