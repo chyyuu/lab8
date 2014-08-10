@@ -806,42 +806,60 @@ failed_cleanup:
 int
 do_execve(const char *name, int argc, const char **argv) {
     static_assert(EXEC_MAX_ARG_LEN >= FS_MAX_FPATH_LEN);
+    char newproc_name[PROC_NAME_LEN+1];
+    char oldproc_name[PROC_NAME_LEN+1];
     struct mm_struct *mm = current->mm;
+    char *kargv[EXEC_MAX_ARG_NUM];
+    const char *path;
+    int ret = -E_INVAL;
+
     if (!(argc >= 1 && argc <= EXEC_MAX_ARG_NUM)) {
         return -E_INVAL;
     }
 
-    char local_name[PROC_NAME_LEN + 1];
-    memset(local_name, 0, sizeof(local_name));
+    //char local_name[PROC_NAME_LEN + 1];
+    memset(newproc_name, 0, sizeof(newproc_name));
+    memset(oldproc_name, 0, sizeof(oldproc_name));
+    //store the old proc name
+    strncpy(oldproc_name,current->name, PROC_NAME_LEN+1);
     
-    char *kargv[EXEC_MAX_ARG_NUM];
-    const char *path;
-    
-    int ret = -E_INVAL;
     
     lock_mm(mm);
-    if (name == NULL) {
-        snprintf(local_name, sizeof(local_name), "<null> %d", current->pid);
-    }
-    else {
-        if (!copy_string(mm, local_name, name, sizeof(local_name))) {
-            unlock_mm(mm);
-            return ret;
-        }
-    }
+    //get the argc argv
     if ((ret = copy_kargv(mm, argc, kargv, argv)) != 0) {
         unlock_mm(mm);
         return ret;
     }
     path = argv[0];
+    //get the local name, used as proc->name
+    if (name != NULL) {
+        if (!copy_string(mm, newproc_name, name, sizeof(newproc_name))) {
+            unlock_mm(mm);
+            return ret;
+        }
+    }
+    else { //name is NULL, we can use path
+       //get exec file name from userspace, used as newest proc->name
+       if(!copy_string(mm,newproc_name,path,sizeof(newproc_name))){
+          unlock_mm(mm);
+          return ret;
+       }
+       if (newproc_name == NULL) {
+          snprintf(newproc_name, sizeof(newproc_name), "<null> %d", current->pid);
+          //cprintf("do_execve: local_name %s  name NULL\n",local_name);
+       }
+        //cprintf("do_execve: local_name %s  name %s\n",local_name, name);
+    }
+    set_proc_name(current, newproc_name);
     unlock_mm(mm);
     files_closeall(current->filesp);
 
     /* sysfile_open will check the first argument path, thus we have to use a user-space pointer, and argv[0] may be incorrect */    
     int fd;
     if ((ret = fd = sysfile_open(path, O_RDONLY)) < 0) {
-        goto execve_exit;
+        goto resetprocname_exit;
     }
+
     if (mm != NULL) {
         lcr3(boot_cr3);
         if (mm_count_dec(mm) == 0) {
@@ -853,12 +871,16 @@ do_execve(const char *name, int argc, const char **argv) {
     }
     ret= -E_NO_MEM;;
     if ((ret = load_icode(fd, argc, kargv)) != 0) {
-        goto execve_exit;
+        goto resetprocname_exit;
     }
     put_kargv(argc, kargv);
-    set_proc_name(current, local_name);
+
+    // cprintf("do_execve: path %s\n", newproc_name);
+    // set_proc_name(current, local_name);
     return 0;
 
+resetprocname_exit:
+    set_proc_name(current, oldproc_name);
 execve_exit:
     put_kargv(argc, kargv);
     do_exit(ret);
